@@ -38,6 +38,7 @@ if (!(Test-Path $agent_install_folder)) {
   New-Item -Path $agent_install_folder -Type directory | Out-Null
 }
 Write-Output "Downloading Elastic Agent"
+$ProgressPreference = 'SilentlyContinue'
 Invoke-WebRequest -UseBasicParsing -Uri $elasticAgentUrl -OutFile "$install_dir\elastic-agent-$agent_version-windows-x86_64.zip"
 Write-Output "Installing Elastic Agent..."
 Write-Output "Unzipping Elastic Agent from $agent_install_folder\elastic-agent-$agent_version-windows-x86_64.zip to $agent_install_folder"
