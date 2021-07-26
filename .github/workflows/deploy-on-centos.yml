@@ -36,19 +36,19 @@ jobs:
         # Sleep is added to ensure that the vboxmanage has finished before deleting the box
       
       - name: Stop any active centos boxes
-        run: vboxmanage controlvm ts.centos7 poweroff && sleep 15
+        run: vboxmanage controlvm ts.centos7 poweroff; sleep 15
 
       - name: Remove Previous Centos 7 Box
         run: vboxmanage unregistervm ts.centos7 --delete
 
       - name: Stop any running windows 10 boxes
-        run: vboxmanage controlvm ts.windows10 poweroff && sleep 15
+        run: vboxmanage controlvm ts.windows10 poweroff; sleep 15
 
       - name: Remove Previous Windows Box
         run: vboxmanage unregistervm ts.windows10 --delete
  
       - name: Stop any Elastomic Boxes
-        run: vboxmanage controlvm ts.elastomic poweroff && sleep 15
+        run: vboxmanage controlvm ts.elastomic poweroff; sleep 15
  
       - name: Remove Previous Elastomic  Box
         run: vboxmanage unregistervm ts.elastomic --delete     
