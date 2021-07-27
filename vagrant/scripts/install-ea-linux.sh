@@ -5,7 +5,7 @@ set -o pipefail
 STACK_VER="${ELASTIC_STACK_VERSION:-7.13.4}"
 KIBANA_URL="${KIBANA_URL:-http://127.0.0.1:5601}"
 KIBANA_AUTH="${KIBANA_AUTH:-}"
-
+FLEET_SERVER_URL="${FLEET_SERVER_URL:=https://127.0.0.1:8220}"
 AGENT_URL="https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-${STACK_VER}-linux-x86_64.tar.gz"
 
 function install_jq() {
@@ -19,7 +19,7 @@ function download_and_install_agent() {
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
     cd "$(basename "$(basename "${AGENT_URL}")" .tar.gz)"
-    sudo ./elastic-agent install --force --insecure --kibana-url="${KIBANA_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
+    sudo ./elastic-agent install --force --insecure --url="${FLEET_SERVER_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
 
     # Cleanup temporary directory
     cd ..
