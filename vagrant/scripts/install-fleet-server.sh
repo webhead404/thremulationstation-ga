@@ -19,7 +19,8 @@ function download_and_install_agent() {
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
     cd "$(basename "$(basename "${AGENT_URL}")" .tar.gz)"
-    sudo ./elastic-agent install --force --insecure --kibana-url="${KIBANA_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
+    #curl -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: fleet" -u vagrant:vagrant http://localhost:5601/api/fleet/service-tokens
+    #sudo ./elastic-agent install --force --insecure --kibana-url="${KIBANA_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
     sudo ./elastic-agent enroll -f --fleet-server-es=http://localhost:9200 --fleet-server-service-token=
     # Cleanup temporary directory
     cd ..
@@ -27,17 +28,18 @@ function download_and_install_agent() {
 }
 
 # Retrieve API keys
-function get_enrollment_token() {
+function get_fleet_server_service_token() {
     declare -a AUTH=()
     declare -a HEADERS=(
-        "-H" "Content-Type: application/json"
+        "-H" "Content-Type: application/json",
+        "-H" "kbn-xrsf: fleet"
     )
 
     if [ -n "${KIBANA_AUTH}" ]; then
         AUTH=("-u" "${KIBANA_AUTH}")
     fi
 
-    response=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys")
+    response=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens")
     enrollment_key_id=$(echo -n "${response}" | jq -r '.list[] | select(.name | startswith("Default")) | .id' )
     enrollment_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys/${enrollment_key_id}" | jq -r '.item.api_key')
 
