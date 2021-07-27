@@ -21,7 +21,7 @@ function download_and_install_agent() {
     cd "$(basename "$(basename "${AGENT_URL}")" .tar.gz)"
     #curl -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: fleet" -u vagrant:vagrant http://localhost:5601/api/fleet/service-tokens
     #sudo ./elastic-agent install --force --insecure --kibana-url="${KIBANA_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
-    sudo ./elastic-agent enroll -f --fleet-server-es=http://localhost:9200 --fleet-server-service-token=
+    sudo ./elastic-agent enroll -f --fleet-server-es=http://localhost:9200 --fleet-server-service-token="$(SERVICE_TOKEN}"
     # Cleanup temporary directory
     cd ..
     rm -rf "$(pwd)"
