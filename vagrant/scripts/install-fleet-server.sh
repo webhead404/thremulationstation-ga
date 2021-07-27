@@ -39,9 +39,9 @@ function get_fleet_server_service_token() {
         AUTH=("-u" "${KIBANA_AUTH}")
     fi
 
-    fleet_service_token=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
-    #enrollment_key=$(echo -n "${response}" | jq -r  jq -r '.value'
-    #enrollment_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens/${enrollment_key_id}" | jq -r '.item.value')
+    response=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens")
+    fleet_service_token_value=$(echo -n "${response}" | jq -r '.value'
+    fleet_service_token=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens/${enrollment_key_id}" | jq -r '.item.value')
 
     echo -n "${fleet_service_token}"
 }
