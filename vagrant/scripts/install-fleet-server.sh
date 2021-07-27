@@ -13,8 +13,8 @@ function install_jq() {
         sudo yum install -y jq
     fi
 }
-function download_and_install_agent() {
-    ENROLLMENT_TOKEN=$(get_enrollment_token)
+function download_and_install_fleet_server() {
+    ENROLLMENT_TOKEN=$(get_fleet_server_service_token)
 
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
@@ -47,4 +47,4 @@ function get_fleet_server_service_token() {
 }
 
 install_jq
-download_and_install_agent
+download_and_install_fleet_server
