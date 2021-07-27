@@ -14,7 +14,7 @@ function install_jq() {
     fi
 }
 function download_and_install_fleet_server() {
-    ENROLLMENT_TOKEN=$(get_fleet_server_service_token)
+    SERVICE_TOKEN=$(get_fleet_server_service_token)
 
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
@@ -39,11 +39,11 @@ function get_fleet_server_service_token() {
         AUTH=("-u" "${KIBANA_AUTH}")
     fi
 
-    response=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens")
-    enrollment_key_id=$(echo -n "${response}" | jq -r '.list[] | select(.name | startswith("Default")) | .id' )
-    enrollment_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens/${enrollment_key_id}" | jq -r '.item.value')
+    fleet_service_token=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
+    #enrollment_key=$(echo -n "${response}" | jq -r  jq -r '.value'
+    #enrollment_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens/${enrollment_key_id}" | jq -r '.item.value')
 
-    echo -n "${enrollment_key}"
+    echo -n "${fleet_service_token}"
 }
 
 install_jq
