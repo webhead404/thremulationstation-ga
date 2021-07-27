@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-STACK_VER="${ELASTIC_STACK_VERSION:-7.12.1}"
+STACK_VER="${ELASTIC_STACK_VERSION:-7.13.4}"
 KIBANA_URL="${KIBANA_URL:-http://127.0.0.1:5601}"
 KIBANA_AUTH="${KIBANA_AUTH:-}"
 
@@ -21,7 +21,7 @@ function download_and_install_fleet_server() {
     cd "$(basename "$(basename "${AGENT_URL}")" .tar.gz)"
     #curl -XPOST -H "Content-Type: application/json" -H "kbn-xsrf: fleet" -u vagrant:vagrant http://localhost:5601/api/fleet/service-tokens
     #sudo ./elastic-agent install --force --insecure --kibana-url="${KIBANA_URL}" --enrollment-token="${ENROLLMENT_TOKEN}"
-    sudo ./elastic-agent enroll -f --fleet-server-es=http://localhost:9200 --fleet-server-service-token="$(SERVICE_TOKEN}"
+    sudo ./elastic-agent enroll -f --fleet-server-es=http://localhost:9200 --fleet-server-service-token="${SERVICE_TOKEN}"
     # Cleanup temporary directory
     cd ..
     rm -rf "$(pwd)"
