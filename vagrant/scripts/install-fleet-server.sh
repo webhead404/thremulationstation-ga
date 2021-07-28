@@ -5,7 +5,7 @@ set -o pipefail
 
 STACK_VER="${ELASTIC_STACK_VERSION:-7.13.4}"
 KIBANA_URL="${KIBANA_URL:-http://127.0.0.1:5601}"
-KIBANA_AUTH="${KIBANA_AUTH:-vagrant:vagrant}"
+KIBANA_AUTH="${KIBANA_AUTH:-}"
 ELASTICSEARCH_URL="${ELASTICSEARCH:-http://127.0.0.1:9200}"
 
 AGENT_URL="https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-${STACK_VER}-linux-x86_64.tar.gz"
