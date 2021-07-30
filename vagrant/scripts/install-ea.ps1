@@ -12,6 +12,7 @@ $headers = @{
 }
 $kibana_url = "http://192.168.33.10:5601"
 $elasticsearch_url = "http://192.168.33.10:9200"
+$fleet_server_url = "https://192.168.33.10:8220"
 
 # Retrieve Stack Version
 Invoke-WebRequest -UseBasicParsing -Uri $elasticsearch_url -OutFile version.json
@@ -22,7 +23,7 @@ Write-Output "Get Enrollment API Key"
 $ApiKeyList = (ConvertFrom-Json(Invoke-WebRequest -UseBasicParsing -Uri  "$kibana_url/api/fleet/enrollment-api-keys" -ContentType "application/json" -Headers $headers -Method GET))
 
 # Get Fleet Token and default policy ID from json message
-$ApiKeyId = $ApiKeyList.list[0].id
+$ApiKeyId = $ApiKeyList.list[1].id
 $ApiKeyActual = (ConvertFrom-Json(Invoke-WebRequest -UseBasicParsing -Uri  "$kibana_url/api/fleet/enrollment-api-keys/$ApiKeyId" -ContentType "application/json" -Headers $headers -Method GET))
 $fleetToken = $ApiKeyActual.item[0].api_key
 
@@ -49,7 +50,7 @@ Rename-Item "$agent_install_folder\elastic-agent-$agent_version-windows-x86_64" 
 Write-Output "Running enroll process of Elastic Agent with token: $fleetToken at url: $kibana_url"
 #install -f --kibana-url=KIBANA_URL --enrollment-token=ENROLLMENT_KEY
 Set-Location 'C:\Program Files\Elastic-Agent'
-.\elastic-agent.exe install -f --insecure --kibana-url=$kibana_url --enrollment-token=$fleetToken
+.\elastic-agent.exe install --force --insecure --url=$fleet_server_url --enrollment-token=$fleetToken
 
 # Ensure Elastic Agent is started
 if ((Get-Service "Elastic Agent") -eq "Stopped") {
