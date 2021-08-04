@@ -33,7 +33,7 @@ function download_and_install_agent () {
     sudo firewall-cmd --reload
     
     response_policy_id=$(curl --silent -XGET "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")))" | .id'
-    policy_id_api_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq -r '.list[0] | select(.id | startswith("$response_policy_id")) | .policy_id')
+    policy_id_api_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg response_policy_id "$POLICY_ID" -r '.list[] | select(.id | startswith("$POLICY_ID")) | .policy_id')
     response_service_token=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
     POLICY_ID=$(echo -n "${response_policy_id}")
     SERVICE_TOKEN=$(echo -n "${response_service_token}")
