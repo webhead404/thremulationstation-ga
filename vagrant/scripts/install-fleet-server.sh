@@ -31,12 +31,17 @@ function download_and_install_agent () {
     curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/setup" | jq
     sudo firewall-cmd --add-port=8220/tcp --permanent
     sudo firewall-cmd --reload
+
+    _FLEET_POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")) | .id')
+
+    #ENROLLMENT_KEY=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg FLEET_POLICY_ID "$FLEET_POLICY_ID" -r '.list[] | select(.policy_id==$POLICY_ID) | .api_key')
     
-    response_policy_id=$(curl --silent -XGET "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")))" | .id'
-    policy_id_api_key=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg response_policy_id "$POLICY_ID" -r '.list[] | select(.id | startswith("$POLICY_ID")) | .policy_id')
-    response_service_token=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
-    POLICY_ID=$(echo -n "${response_policy_id}")
-    SERVICE_TOKEN=$(echo -n "${response_service_token}")
+    #response_policy_id=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq -r '.list[1] | select(.name | startswith("Default")) | .policy_id')
+
+    SERVICE_TOKEN=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
+    
+    echo "Enrolling agent using policy ID: "${POLICY_ID}" and service token: "${SERVICE_TOKEN}""
+    #SERVICE_TOKEN=$(echo -n "${response_service_token}")
 
     #echo -n "${ENROLLMENT_TOKEN}"
 
