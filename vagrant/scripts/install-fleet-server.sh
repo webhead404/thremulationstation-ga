@@ -32,18 +32,11 @@ function download_and_install_agent () {
     sudo firewall-cmd --add-port=8220/tcp --permanent
     sudo firewall-cmd --reload
 
-    _FLEET_POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")) | .id')
-
-    #ENROLLMENT_KEY=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg FLEET_POLICY_ID "$FLEET_POLICY_ID" -r '.list[] | select(.policy_id==$POLICY_ID) | .api_key')
-    
-    #response_policy_id=$(curl --silent "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq -r '.list[1] | select(.name | startswith("Default")) | .policy_id')
+    FLEET_POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")) | .id')
 
     SERVICE_TOKEN=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
     
-    echo "Enrolling agent using policy ID: "${POLICY_ID}" and service token: "${SERVICE_TOKEN}""
-    #SERVICE_TOKEN=$(echo -n "${response_service_token}")
-
-    #echo -n "${ENROLLMENT_TOKEN}"
+    echo "Enrolling agent using policy ID: "${FLEET_POLICY_ID}" and service token: "${SERVICE_TOKEN}""
 
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
