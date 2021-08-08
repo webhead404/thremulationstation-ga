@@ -33,18 +33,20 @@ function download_and_install_agent () {
     sudo firewall-cmd --add-port=8220/tcp --permanent
     sudo firewall-cmd --reload
 
-    FLEET_POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")) | .id')
-
-    ENROLLMENT_TOKEN=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg FLEET_POLICY_ID "$FLEET_POLICY_ID" -r '.list[] | select(.policy_id==$FLEET_POLICY_ID) | .api_key')
-
-
+    POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/agent_policies" | jq --raw-output '.items[] | select(.name | startswith("Default Fleet")) | .id')
     
-    echo "Enrolling agent using policy ID: "${FLEET_POLICY_ID}" and service token: "${ENROLLMENT_TOKEN}""
+    FLEET_POLICY_ID=$(curl --silent -XGET "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/enrollment-api-keys" | jq --arg POLICY_ID "$POLICY_ID" -r '.list[] | select(.policy_id==$POLICY_ID)
+
+    SERVICE_TOKEN=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
+
+   
+    
+    echo "Enrolling agent using policy ID: "${FLEET_POLICY_ID}" and service token: "${SERVICE_TOKEN}""
 
     cd "$(mktemp -d)"
     curl --silent -LJ "${AGENT_URL}" | tar xzf -
     cd "$(basename "$(basename "${AGENT_URL}")" .tar.gz)"
-    sudo ./elastic-agent install --force --fleet-server-es="${ELASTICSEARCH_URL}" --fleet-server-service-token="${ENROLLMENT_TOKEN}" --fleet-server-policy "${FLEET_POLICY_ID}"
+    sudo ./elastic-agent install --force --fleet-server-es="${ELASTICSEARCH_URL}" --fleet-server-service-token="${SERVICE_TOKEN}" --fleet-server-policy "${FLEET_POLICY_ID}"
     
     # Cleanup temporary directory
     cd ..
