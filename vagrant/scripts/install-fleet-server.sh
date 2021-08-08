@@ -25,7 +25,9 @@ function download_and_install_agent () {
     if [ -n "${KIBANA_AUTH}" ]; then
         AUTH=("-u" "${KIBANA_AUTH}")
     fi
-
+    
+    systemctl is-active --quiet elasticsearch && echo Elasticsearch is running. Checking Kibana
+    systemctl is-active --quiet kibana && echo Kibana is running
     echo "Setting up Fleet Server. This could take a minute.."
     curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/setup" | jq
     sudo firewall-cmd --add-port=8220/tcp --permanent
