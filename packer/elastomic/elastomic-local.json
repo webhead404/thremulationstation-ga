@@ -26,7 +26,7 @@
       "ssh_port": 22,
       "ssh_wait_timeout": "1800s",
       "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
-      "vm_name": "packer-elastomic"
+      "vm_name": "packer-elastomic",
       "vmx_data": {
         "RemoteDisplay.vnc.enabled": "false",
         "RemoteDisplay.vnc.port": "5900",
@@ -34,6 +34,7 @@
         "numvcpus": "2",
         "scsi0.virtualDev": "lsisas1068"
       }
+    }
   ],
   "provisioners": [
     {
