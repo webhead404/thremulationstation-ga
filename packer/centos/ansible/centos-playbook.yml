@@ -54,6 +54,7 @@
           - wget
           - golang
           - bzip2
+          - open-vm-tools
 
     - name: Start Firewalld Service
       systemd:
