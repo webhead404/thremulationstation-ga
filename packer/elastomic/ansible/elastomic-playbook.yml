@@ -62,6 +62,7 @@
           - golang
           - openssl-devel
           - wget
+          - open-vm-tools
 
 ###################################
 # Firewall
