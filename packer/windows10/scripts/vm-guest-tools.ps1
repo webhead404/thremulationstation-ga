@@ -1,3 +1,7 @@
+# Install VMWare Tools via Powershell
+# Author: Chris Long with DetectionLab / @clong
+
+
 if (!( Test-Path "C:\Windows\Temp\7z2102-x64.msi")) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.7-zip.org/a/7z2102-x64.msi', 'C:\Windows\Temp\7z2102-x64.msi')
 }
