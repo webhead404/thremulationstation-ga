@@ -14,10 +14,11 @@ Vagrant.configure("2") do |config|
     cfg.vm.network "forwarded_port", guest: 9200, host: 9200
     cfg.vm.network "forwarded_port", guest: 8487, host: 8487
     cfg.vm.network "forwarded_port", guest: 8888, host: 8888
-    cfg.vm.provider :vmware_desktop do |vmw, override|
+    cfg.vm.provider :vmware_desktop do |vmw|
       vmw.vmx["displayname"] = "ts.elastomic"
       vmw.vmx["ethernet0.pcislotnumber"] = "32"
-      vmw.memory = 4096
+      vmw.ssh_info_public = true
+      vmw.memory = 5000
       vmw.cpus = 2
       #vmw.customize ["modifyvm", :id, "--cableconnected1", "on"]
     end
@@ -81,6 +82,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.network "forwarded_port", guest: 9090, host: 9090
     cfg.vm.provider :vmware_desktop do |vmw, override|
       vmw.vmx["displayname"] = "ts.centos7"
+      vmw.ssh_info_public = true
       vmw.vmx["ethernet0.pcislotnumber"] = "32"
       vmw.memory = 1024
       vmw.cpus = 1
