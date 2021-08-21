@@ -27,9 +27,23 @@ function download_and_install_agent () {
     fi
     
     systemctl is-active --quiet elasticsearch && echo Elasticsearch is running. Checking Kibana
-    systemctl is-active --quiet kibana && echo Kibana is running
-    echo "Setting up Fleet Server. This could take a minute.."
-    curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/setup" | jq
+    systemctl is-active --quiet kibana && echo Kibana service is running, making sure we can login..
+
+
+    # Wait for Kibana to become available
+    echo "This part could take a few minutes, please let it complete."
+    while true
+    do
+      STATUS=$(curl -I http://192.168.33.10:5601/login 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+      if [ "${STATUS}" == "200" ]; then
+        echo "Setting up Fleet Server";
+        break
+      else
+        echo "Kibana isn't up yet. Trying again in 10 seconds"
+      fi
+      sleep 10
+    done
+
     sudo firewall-cmd --add-port=8220/tcp --permanent
     sudo firewall-cmd --reload
 
@@ -37,7 +51,7 @@ function download_and_install_agent () {
 
     SERVICE_TOKEN=$(curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/service-tokens" | jq -r '.value')
 
-   
+    curl --silent -XPOST "${AUTH[@]}" "${HEADERS[@]}" "${KIBANA_URL}/api/fleet/setup" | jq;
     
     echo "Enrolling agent using policy ID: "${POLICY_ID}" and service token: "${SERVICE_TOKEN}""
 
