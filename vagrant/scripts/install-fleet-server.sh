@@ -6,6 +6,9 @@ STACK_VER="${ELASTIC_STACK_VERSION:-7.14.0}"
 KIBANA_URL="${KIBANA_URL:-http://127.0.0.1:5601}"
 KIBANA_AUTH="${KIBANA_AUTH:-}"
 ELASTICSEARCH_URL="${ELASTICSEARCH_URL:-http://127.0.0.1:9200}"
+ES_SERVICE="elasticsearch"
+KIBANA_SERVICE="kibana"
+
 
 AGENT_URL="https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-${STACK_VER}-linux-x86_64.tar.gz"
 
@@ -15,25 +18,40 @@ function install_jq() {
     fi
 }
 
-
-ES_SERVICE="elasticsearch"
-    # 
+function check_elasticsearch_service() { 
+    echo "Checking Elasticsearch"
     if (( $(ps -ef | grep -v grep | grep $ES_SERVICE | wc -l) > 0 ))
     then
-    echo "$ES_SERVICE is running!"
+    echo "Elasticsearch is running!"
     else
     systemctl start $ES_SERVICE
     fi
+}
 
-KIBANA_SERVICE="kibana"
-    # 
+function check_kibana_service() {
+    echo "Checking Kibana"
     if (( $(ps -ef | grep -v grep | grep $KIBANA_SERVICE | wc -l) > 0 ))
     then
-    echo "$KIBANA_SERVICE is running!"
+    echo "Kibana is running!"
     else
     systemctl start $KIBANA_SERVICE
     fi
-
+}
+    # Check Kibana
+function check_kibana_access() {
+    echo "This part takes about 2 minutes, please let it complete."
+    while true
+    do
+        STATUS=$(curl -I http://192.168.33.10:5601/login 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+        if [ "${STATUS}" == "200" ]; then
+            echo "Kibana is up. Proceeding";
+            break
+        else
+            echo "Kibana still loading. Trying again in 10 seconds"
+        fi
+        sleep 10;
+    done
+}
 
 function download_and_install_agent () {
     declare -a AUTH=()
@@ -71,4 +89,7 @@ function download_and_install_agent () {
 }
 
 install_jq
+check_elasticsearch_service
+check_kibana_service
+check_kibana_access
 download_and_install_agent
