@@ -40,16 +40,17 @@ function check_kibana_service() {
     # Check Kibana
 function check_kibana_access() {
     echo "This part takes about 2 minutes, please let it complete."
+    sleep 10
     while true
     do
-        STATUS=$(curl -I http://192.168.33.10:5601/login 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-        if [ "${STATUS}" == "200" ]; then
-            echo "Kibana is up. Proceeding";
-            break
-        else
-            echo "Kibana still loading. Trying again in 10 seconds"
-        fi
-        sleep 10;
+      STATUS=$(curl -I http://192.168.33.10:5601/login 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+      if [ "${STATUS}" == "200" ]; then
+        echo "Kibana is up. Proceeding"
+        break
+      elif [ "${STATUS}" == "503" ]; then
+        echo "Kibana is up but we got the landing page. Trying again in 10 seconds"
+        sleep 10
+      fi
     done
 }
 
